@@ -1,0 +1,216 @@
+<!-- product-details.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="Style.css">
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=shopping_cart" />
+</head>
+<script>
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  function addToCart(product) {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+  if (!isLoggedIn) {
+    alert("Please log in to add items to your cart.");
+    window.location.href = 'SIGNIN.html';
+    return;
+  }
+    const index = cart.findIndex(item => item.id === product.id);
+    if (index !== -1) {
+      cart[index].quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    alert('Added to cart!');
+  }
+
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+    document.getElementById('cart-count').innerText = totalItems;
+  }
+
+  updateCartCount();
+</script>
+
+<script>
+  function logoutUser() {
+  
+    localStorage.removeItem('email');  
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('favoriteItems'); 
+    localStorage.removeItem('cart'); 
+    localStorage.removeItem('cartCount');
+    localStorage.removeItem('userId'); 
+    localStorage.removeItem('username');
+
+    window.location.href = 'SIGNIN.html?message=logout'; 
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', function (e) {
+    e.preventDefault(); 
+    logoutUser(); 
+  });
+  
+   const username = '<%= session.getAttribute("username") %>';
+   const userId = '<%= session.getAttribute("userId") %>';
+   console.log("Logged in as", username, "with ID:", userId);
+</script>
+
+<body>
+     <section class=" top-txt ">
+            <div class="head container ">
+                <div class="head-txt ">
+
+                </div>
+                <div class="sing_in_up ">
+                    <a id="logoutBtn" href="logout"onclick="logoutUser()">Logout</a>
+                </div>
+            </div>
+        </section>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <input type="checkbox" name="" id="checkbox">
+            <div class="hamburger-lines">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+            </div>
+            <ul class="menu-items">
+                <a href="cart.html" class="cart-link">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    <span id="cart-count" class="cart-count">0</span>
+                </a>
+
+            </ul>
+            <div class="logo">
+                <img src="img/logo.PNG" alt="">
+            </div>
+        </div>
+    </nav>
+  <div class="container">
+    <div id="product-details">
+
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+
+    const products = [
+      {
+        id: "1",
+        name: "Samsung S24 Ultra",
+        price: "74999.00",
+        image: "img/Samsung.avif",
+        description: "Flagship Samsung smartphone with advanced camera and display technology."
+      },
+      {
+        id: "2",
+        name: "iPhone 16",
+        price: "79900.00",
+        image: "img/phone.webp",
+        description: "Apple’s latest smartphone with powerful performance and stunning design."
+      },
+       {
+        id: "3",
+        name: "Lenovo IdeaPad Gaming",
+        price: "46,508.00",
+        image: "img/Laptop2.webp",
+        description: "Processor :Intel® Core™ 3 100U Processor E-cores up to 3.30 GHz P-cores up to 4.70 GHz"
+      },
+      {
+        id: "4",
+        name: "Blitz C Gaming Headphone",
+        price: "1,499.00",
+        image: "img/Headphone.webp",
+        description: "ZEBRONICS Blitz C Dolby Atmos Gaming Over Ear Headphone, 50Mm Neodymium Drivers, Padded Headband, Black"
+      },
+      {
+        id: "5",
+        name: "Amstrad 65 Inch  Smart TV",
+        price: "21,499.00",
+        image: "img/tv2.webp",
+        description: "Amstrad 164 cm (65 inches) 4K Ultra HD Smart Certified Android LED TV"
+      },
+        {
+        id: "6",
+        name: "iPhone 16 pro",
+        price: "119900.00",
+        image: "img/iphone-16-pro.jpg",
+        description: "iPhone 16 Pro 256 GB: 5G Mobile Phone with Camera Control, 4K 120 fps Dolby Vision and a Huge Leap in Battery Life"
+      },
+      {
+        id: "7",
+        name: "Samsung Galaxy Z Flip",
+        price: "89999.00",
+        image: "img/Samsung z.webp",
+        description: "Style and function that fits in your pocket. It's a pocket-sized statement piece"
+      },
+      {
+        id: "8",
+        name: "HP Victus Gaming Laptop",
+        price: "64,490.00",
+        image: "img/shoplap.webp",
+        description: "Step up the fun with our most affordable gaming laptop range that doesn't shy on performance."
+      },
+       {
+        id: "9",
+        name: "Sony PlayStation 5 Slim Disc Edition",
+        price: "54,990.00",
+        image: "img/ps5.webp",
+        description: "Experience lightning-fast loading times and seamless gameplay transitions with the custom CPU, GPU, and SSD."
+      },
+      {
+        id: "10",
+        name: "653 L Convertible Refrigerator",
+        price: "79990.00",
+        image: "img/refrigerator.avif",
+        description: "653 L Convertible 5in1 Side by Side Refrigerator RS76CG8003S9."
+      },
+      {
+        id: "11",
+        name: "Aquaguard Blaze",
+        price: "19,999.00",
+        image: "img/shoppurifi.webp",
+        description: "Aquaguard Blaze Insta UV+UF Hot & Ambient Copper Water Purifier."
+      },
+       {
+        id: "12",
+        name: "Philips Digital Oven",
+        price: "22,995.00",
+        image: "img/oven.webp",
+        description: "Philips Digital Oven Toast Grill 55L with Opti Temp Technology - HD6977/00."
+      }
+    ];
+
+    const product = products.find(p => p.id === productId);
+    const container = document.getElementById('product-details');
+
+    if (product) {
+      container.innerHTML = `
+        <h1>${product.name}</h1>
+        <img src="${product.image}" alt="${product.name}" style="max-width:300px">
+        <p><strong>Price:</strong> ${product.price}</p>
+        <p>${product.description}</p>
+      
+        <button class="buy-now" onclick='addToCart(${JSON.stringify(product)})'>Add to Cart</button>
+
+       
+      `;
+    } else {
+      container.innerHTML = `<p>Product not found.</p>`;
+    }
+  </script>
+  
+
+</body>
+</html>

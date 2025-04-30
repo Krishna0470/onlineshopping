@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shopping Cart</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="Style.css">
+  <style>
+    .cart-container {
+      max-width: 600px;
+      margin: 0 auto;
+      margin-top: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    #totalPrice {
+      font-size: 20px;
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .place-order {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .place-order button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: blue;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .place-order button:hover {
+      background-color: blueviolet;
+    }
+
+    .empty-msg {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 18px;
+    }
+
+    td button {
+      padding: 5px 10px;
+      margin: 0 3px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    td button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-container">
+      <input type="checkbox" name="" id="checkbox">
+      <div class="hamburger-lines">
+        <span class="line line1"></span>
+        <span class="line line2"></span>
+        <span class="line line3"></span>
+      </div>
+      <ul class="menu-items"></ul>
+      <div class="logo">
+        <img src="img/logo.PNG" alt="">
+      </div>
+    </div>
+  </nav>
+
+  <div class="cart-container">
+    <h1>Your Cart</h1>
+    <div id="cartItems"></div>
+    <div id="totalPrice"></div>
+    <div class="place-order" id="orderFormContainer"></div>
+  </div>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const email = localStorage.getItem("email");
+    const userId = localStorage.getItem("userId");
+
+    const cartItemsDiv = document.getElementById("cartItems");
+    const totalPriceDiv = document.getElementById("totalPrice");
+    const orderFormContainer = document.getElementById("orderFormContainer");
+
+    function renderCart() {
+      if (cart.length === 0) {
+        cartItemsDiv.innerHTML = "<p class='empty-msg'>Your cart is empty.</p>";
+        totalPriceDiv.innerHTML = "";
+        orderFormContainer.innerHTML = "";
+        return;
+      }
+
+      let tableHTML = `<table>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+          <th>Action</th>
+        </tr>`;
+
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+
+        tableHTML += `<tr>
+                        <td>${item.name || 'No Name'}</td>
+                        <td>₹${item.price}</td>
+                        <td>
+                          <button onclick="updateQuantity(${index}, -1)">–</button>
+                          ${item.quantity}
+                          <button onclick="updateQuantity(${index}, 1)">+</button>
+                        </td>
+                        <td>₹${subtotal.toFixed(2)}</td>
+                        <td><button onclick="removeItem(${index})">🗑️</button></td>
+                      </tr>`;
+      });
+
+      tableHTML += "</table>";
+      cartItemsDiv.innerHTML = tableHTML;
+      totalPriceDiv.innerHTML = "Total: ₹" + total.toFixed(2);
+
+      const firstItem = cart[0];
+      orderFormContainer.innerHTML = `
+        <form method="post" action="DBUtil">
+          <input type="hidden" name="action" value="placeOrder">
+          <input type="hidden" name="user_id" value="${userId}">
+          <input type="hidden" name="email" value="${email}">
+          <input type="hidden" name="product_name" value="${firstItem.name}">
+          <input type="hidden" name="quantity" value="${firstItem.quantity}">
+          <input type="hidden" name="price" value="${firstItem.price}">
+          <input type="hidden" name="total" value="${(firstItem.quantity * firstItem.price).toFixed(2)}">
+          <button type="submit">Place Order</button>
+        </form>
+      `;
+    }
+
+    function updateQuantity(index, change) {
+      if (cart[index]) {
+        cart[index].quantity += change;
+        if (cart[index].quantity <= 0) {
+          cart.splice(index, 1);
+        }
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+      }
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+
+    renderCart();
+  </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SIGN IN</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="signin.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <input type="checkbox" id="checkbox">
+      <div class="hamburger-lines">
+        <span class="line line1"></span>
+        <span class="line line2"></span>
+        <span class="line line3"></span>
+      </div>
+      <div class="logo">
+        <img src="img/logo.PNG" alt="logo">
+      </div>
+    </div>
+  </nav>
+
+  <section class="signin">
+    <div class="containersig">
+      <p class="headlinesig">Login</p>
+      <form action="DBUtil" method="post" id="loginForm">
+        <input type="hidden" name="action" value="login">
+        
+        <div class="boxsig">
+          <p>Email</p>
+          <div>
+            <input type="text" name="email" id="email" placeholder="Enter your Email">
+          </div>
+        </div>
+
+        <div class="boxsig">
+          <p>Password</p>
+          <div>
+            <input type="password" name="password" id="password" placeholder="Enter your Password" autocomplete="current-password">
+          </div>
+        </div>
+
+        <button class="loginBtn">Login</button>
+        <p class="text">Don't have an account? <a href="SIGNUP.html">Sign up</a></p>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    window.onload = function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("message") === "logout") {
+        alert("Logout Successful!");
+      }
+    };
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const loginForm = document.getElementById("loginForm");
+
+      if (loginForm) {
+        loginForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value.trim();
+
+          const formData = new URLSearchParams();
+          formData.append("action", "login");
+          formData.append("email", email);
+          formData.append("password", password);
+
+          fetch("DBUtil", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formData.toString(),
+          })
+           .then((response) => response.json())
+.then((data) => {
+  if (data.status === "success") {
+    localStorage.setItem("email", email);
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("isLoggedIn", "true");
+
+    alert("Login Successful!");
+    window.location.href = "shopping.html";
+  } else {
+    alert(data.message || "Invalid email or password.");
+  }
+})
+
+            .catch((error) => {
+              console.error("Error during login:", error);
+              alert("Login failed due to a technical issue.");
+            });
+        });
+      } else {
+        console.warn("Form with ID 'loginForm' not found.");
+      }
+    });
+  </script>
+</body>
+</html>

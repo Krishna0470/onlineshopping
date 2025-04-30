@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Orders</title>
+  <meta charset="UTF-8">
+          <link rel="stylesheet" href="Style.css">
+  <style>
+  
+    .order-container {
+      max-width: 800px;
+      margin: 0 auto;
+      margin-top: 20px;
+    }
+
+    .order-item {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .order-item p {
+      margin: 5px 0;
+    }
+
+    .empty-msg {
+      text-align: center;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+    
+          <nav class="navbar">
+            <div class="navbar-container">
+                <input type="checkbox" name="" id="checkbox">
+                <div class="hamburger-lines">
+                    <span class="line line1"></span>
+                    <span class="line line2"></span>
+                    <span class="line line3"></span>
+                </div>
+                <ul class="menu-items">
+                   
+                </ul>
+                <div class="logo">
+                    <img src="img/logo.PNG" alt="">
+                </div>
+            </div>
+        </nav>
+  <div class="order-container">
+    <h1>Your Orders</h1>
+    <div id="orders"></div>
+  </div>
+
+  <script>
+   const userId = localStorage.getItem("userId") || 6;
+
+    // Fetch orders from backend
+    fetch(`http://localhost:8080/OnlineShopping/orders?userId=${userId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch orders.");
+        }
+        return response.json();
+      })
+      .then(data => {
+        const ordersDiv = document.getElementById("orders");
+
+        // Check if orders are available
+        if (data.length === 0) {
+          ordersDiv.innerHTML = "<p class='empty-msg'>No orders found.</p>";
+        } else {
+          // Render orders dynamically
+          ordersDiv.innerHTML = data.map(order => `
+            <div class="order-item">
+              <p><strong>Product:</strong> ${order.product_name}</p>
+              <p><strong>Qty:</strong> ${order.quantity}</p>
+              <p><strong>Price:</strong> ₹${order.price}</p>
+              <p><strong>Status:</strong> ${order.status}</p>
+              <p><strong>Total:</strong> ₹${order.total.toFixed(2)}</p>
+            </div>
+          `).join('');
+        }
+      })
+      .catch(error => {
+        document.getElementById("orders").innerHTML = `<p style="color:red;">${error.message}</p>`;
+      });
+  </script>
+</body>
+</html>
